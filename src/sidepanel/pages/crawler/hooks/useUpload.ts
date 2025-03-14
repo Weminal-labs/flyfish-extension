@@ -52,6 +52,26 @@ export const useUpload = () => {
   }, []);
 
   useEffect(() => {
+    const handleStorageChange = (changes: { [key: string]: chrome.storage.StorageChange }) => {
+      if (changes.lastEvaluation) {
+        setLastEvaluation(changes.lastEvaluation.newValue);
+      }
+    };
+
+    // Initial load
+    chrome.storage.local.get('lastEvaluation').then((result) => {
+      setLastEvaluation(result.lastEvaluation);
+    });
+
+    // Listen for changes
+    chrome.storage.local.onChanged.addListener(handleStorageChange);
+
+    return () => {
+      chrome.storage.local.onChanged.removeListener(handleStorageChange);
+    };
+  }, []);
+
+  useEffect(() => {
     const fetchGroups = async () => {
       if (address && selectedTopic) {
         const groups: GroupListResponse = await PinataApi.getGroupPinataByName(
@@ -68,7 +88,7 @@ export const useUpload = () => {
       }
     };
     fetchGroups();
-  }, [address, selectedTopic]);
+  }, [address, selectedTopic, groupState?.createGroup]);
 
   const handleCreateGroup = async (): Promise<GroupResponseItem> => {
     if (!selectedTopic || !address) {
