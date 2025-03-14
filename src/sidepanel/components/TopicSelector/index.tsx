@@ -11,7 +11,7 @@ interface TopicSelectorProps {
 export const TopicSelector: React.FC<TopicSelectorProps> = ({
   selectedTopic,
   onTopicChange,
-  predefinedTopics = ["Sonic"],
+  predefinedTopics = ["Aptos", "Movement"],
   onDropdownHeightChange
 }) => {
   const [customTopic, setCustomTopic] = useState('');
